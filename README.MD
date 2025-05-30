@@ -1,5 +1,7 @@
 ## Dockerfile Pagamentos PHP
 FROM php:8.2-cli-alpine - passo a imagem base da linguagem que sera utilizado no projeto
+
+
 WORKDIR /app - cria um diretorio dentro do container para eu utilizar na aplição
 COPY index.php . - copio o arquivo da minha maquina para o diretorio do container
 EXPOSE 3003 - aponto qual porta a aplicação vai ficar rodando dentro do container
