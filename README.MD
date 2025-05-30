@@ -1,29 +1,48 @@
+# Dockerfiles
+
 ## Dockerfile Pagamentos PHP
 FROM php:8.2-cli-alpine - passo a imagem base da linguagem que sera utilizado no projeto
 
-
 WORKDIR /app - cria um diretorio dentro do container para eu utilizar na aplição
+
 COPY index.php . - copio o arquivo da minha maquina para o diretorio do container
+
 EXPOSE 3003 - aponto qual porta a aplicação vai ficar rodando dentro do container
+
 CMD ["php", "-S", "0.0.0.0:3003"] - utilizado para fazer a API rodar e subir
+
 
 ## Dockerfile Pedidos PYTHON
 FROM python:3.9-slim - passo a imagem base da linguagem que sera utilizado no projeto
+
 WORKDIR /usr/src/app - crio um diretorio com essas pastas dentro do container 
+
 COPY requirements.txt ./ - primeiro passo para o diretorio o .txt que contem as bibliotecas e frameworks que vou usar
+
 RUN pip install --no-cache-dir -r requirements.txt - mando ele rodar um comando install das bibliotecas do .txt que passei
+
 COPY . . - termino de passar tudo que tem no meu diretorio local que ta o arquivo Dockerfile
+
 EXPOSE 3002 - aponto a porta que a aplicação vai ficar rodando no container
+
 CMD ["python", "app.py"] - comando cmd para rodar a API
+
 
 ## Dockerfile Produtos NODE.JS
 FROM node:18-alpine - passo a imagem que vou utilizar na API
+
 WORKDIR /usr/src/app - crio um diretorio dentro do container com esse path
+
 COPY package*.json ./ - passo para o container primeiro os arquivos package*.json para o container, pois contem regras
+
 RUN npm install --only=production - mando instalar as dependencias necessarias para rodar em produção e ignora as outras
+
 COPY . . - copio para o container o restante dos arquivos do diretorio da maquina que contem o dockerfile
+
 EXPOSE 3001 - aponto a porta que a aplicação vai rodar no container
+
 CMD [ "npm", "start" ] - passo o comando cmd necessario para rodar a API
+
 
 # Sobre o docker-compose.yml
 
