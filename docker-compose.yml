@@ -1,0 +1,79 @@
+version: '3.8' # Define a versão do Docker Compose
+
+services:
+  # Serviço do Banco de Dados MySQL
+  db:
+    image: mysql:5.7 # Usaremos MySQL 5.7 para maior compatibilidade, mas 8.0 também é uma opção.
+    container_name: mysql_db_ecommerce
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example  # Conforme o seu código Python
+      MYSQL_DATABASE: ecommerce     # Conforme o seu código Python
+    ports:
+      - "3306:3306" # Mapeia a porta do MySQL para o host (para acesso externo, se necessário)
+    volumes:
+      - mysql_data:/var/lib/mysql # Persiste os dados do MySQL
+    networks:
+      - ecommerce_network
+
+  # Serviço do Redis
+  redis:
+    image: redis:6.2-alpine # Imagem leve do Redis
+    container_name: redis_cache_ecommerce
+    restart: always
+    ports:
+      - "6379:6379" # Mapeia a porta do Redis para o host
+    volumes:
+      - redis_data:/data # Persiste os dados do Redis (se configurado para persistência)
+    networks:
+      - ecommerce_network
+
+  # Serviço da API de Produtos (Node.js)
+  products:
+    build:
+      context: ./api_produtos # Caminho para o Dockerfile da API de Produtos
+    container_name: products_api_node
+    restart: always
+    ports:
+      - "3001:3001" # Mapeia a porta da API de Produtos
+    networks:
+      - ecommerce_network
+    # Não tem 'depends_on' explícito, pois é o primeiro na cadeia de chamadas.
+
+  # Serviço da API de Pedidos (Python)
+  orders:
+    build:
+      context: ./api_pedidos # Caminho para o Dockerfile da API de Pedidos
+    container_name: orders_api_python
+    restart: always
+    ports:
+      - "3002:3002" # Mapeia a porta da API de Pedidos
+    depends_on: # Garante que estes serviços iniciem antes (não garante que estejam "prontos")
+      - db
+      - redis
+      - products
+    networks:
+      - ecommerce_network
+
+  # Serviço da API de Pagamentos (PHP)
+  payments:
+    build:
+      context: ./api_pagamentos # Caminho para o Dockerfile da API de Pagamentos
+    container_name: payments_api_php
+    restart: always
+    ports:
+      - "3003:3003" # Mapeia a porta da API de Pagamentos
+    depends_on:
+      - orders # Garante que a API de Pedidos inicie antes
+    networks:
+      - ecommerce_network
+
+# Define as redes customizadas
+networks:
+  ecommerce_network:
+    driver: bridge # Rede padrão do tipo bridge
+
+# Define os volumes para persistência de dados
+volumes:
+  mysql_data:
+  redis_data:

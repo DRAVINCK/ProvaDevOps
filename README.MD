@@ -1,0 +1,7 @@
+O Dockerfile de cada API foi feito de um jeito simples: primeiro, eu escolho a imagem base da linguagem certinha que vou usar (FROM). Depois, crio um diretório lá dentro do contêiner, tipo uma pasta /app (WORKDIR), pra ser o lugar da aplicação.
+
+Na hora de copiar os arquivos da minha máquina pra esse diretório (COPY), nos de Node e Python, eu costumo mandar primeiro só os arquivos que listam as dependências (como o package.json ou o requirements.txt). Aí rodo o comando pra instalar essas dependências (RUN). Só depois copio o resto do código da API. Faço assim porque, se eu mudar só o código da API mas não as dependências, o Docker é esperto e usa o cache da instalação das dependências, aí o build fica mais rápido.
+
+Com o EXPOSE, eu só aviso em qual porta a aplicação vai ficar escutando lá dentro do contêiner – não é ele que libera a porta pro meu PC, isso é feito depois no docker-compose ou no docker run. E o CMD é o comando final que bota a API pra rodar de verdade quando o contêiner sobe.
+
+A diferença maior, como eu disse, é que nos Dockerfiles do Python e do Node tem essa linha a mais (RUN) pra instalar as dependências e bibliotecas que cada API precisa pra funcionar, o de PHP não teve essa necessidade neste projeto
